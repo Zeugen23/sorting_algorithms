@@ -1,95 +1,93 @@
 #include "sort.h"
 
-void my_swap_ints(int *a, int *b);
-int my_lomuto_partition(int *array, size_t size, int left, int right);
-void my_lomuto_sort(int *array, size_t size, int left, int right);
-void quick_sort(int *array, size_t size);
-
 /**
- * my_swap_ints - Swap two integers in an array.
- * @a: The first integer to swap.
- * @b: The second integer to swap.
- */
-void my_swap_ints(int *a, int *b)
-{
-    int tmp;
-
-    tmp = *a;
-    *a = *b;
-    *b = tmp;
-}
-
-/**
- * my_lomuto_partition - Order a subset of an array of integers according to
- *                       the Lomuto partition scheme (last element as pivot).
- * @array: The array of integers.
- * @size: The size of the array.
- * @left: The starting index of the subset to order.
- * @right: The ending index of the subset to order.
- *
- * Return: The final partition index.
- */
-int my_lomuto_partition(int *array, size_t size, int left, int right)
-{
-    int *pivot, above, below;
-
-    pivot = array + right;
-    for (above = below = left; below < right; below++)
-    {
-        if (array[below] < *pivot)
-        {
-            if (above < below)
-            {
-                my_swap_ints(array + below, array + above);
-                print_array(array, size);
-            }
-            above++;
-        }
-    }
-
-    if (array[above] > *pivot)
-    {
-        my_swap_ints(array + above, pivot);
-        print_array(array, size);
-    }
-
-    return (above);
-}
-
-/**
- * my_lomuto_sort - Implement the quicksort algorithm through recursion.
- * @array: An array of integers to sort.
- * @size: The size of the array.
- * @left: The starting index of the array partition to order.
- * @right: The ending index of the array partition to order.
- *
- * Description: Uses the Lomuto partition scheme.
- */
-void my_lomuto_sort(int *array, size_t size, int left, int right)
-{
-    int part;
-
-    if (right - left > 0)
-    {
-        part = my_lomuto_partition(array, size, left, right);
-        my_lomuto_sort(array, size, left, part - 1);
-        my_lomuto_sort(array, size, part + 1, right);
-    }
-}
-
-/**
- * my_quick_sort - Sort an array of integers in ascending
- *                 order using the quicksort algorithm.
- * @array: An array of integers.
- * @size: The size of the array.
- *
- * Description: Uses the Lomuto partition scheme. Prints
- *              the array after each swap of two elements.
+ * quick_sort - sorts an array with the Quicksort algorithm
+ * @array: array of ints to sort
+ * @size: size of the array
  */
 void quick_sort(int *array, size_t size)
 {
-    if (array == NULL || size < 2)
-        return;
+	if (size < 2)
+		return;
 
-    my_lomuto_sort(array, size, 0, size - 1);
+	quick_recursion(array, 0, (int)size - 1, size);
+}
+
+/**
+ * quick_recursion - helper function for Quicksort
+ * @array: array to sort
+ * @left: index of the left element
+ * @right: index of the right element
+ * @size: size of the array
+ */
+void quick_recursion(int *array, int left, int right, size_t size)
+{
+	int piv;
+
+	if (left < right)
+	{
+		piv = lomuto_partition(array, left, right, size);
+		quick_recursion(array, left, piv - 1, size);
+		quick_recursion(array, piv + 1, right, size);
+	}
+}
+
+/**
+ * lomuto_partition - performs Lomuto partition scheme for Quicksort
+ * @array: array to partition
+ * @left: index of the left element
+ * @right: index of the right element
+ * @size: size of the array
+ *
+ * Return: the index of the pivot element
+ */
+int lomuto_partition(int *array, int left, int right, size_t size)
+{
+	int pivot = array[right];
+	int i = left - 1;
+	int j, temp;
+
+	for (j = left; j <= right - 1; j++)
+	{
+		if (array[j] <= pivot)
+		{
+			i++;
+			if (i != j)
+			{
+				temp = array[i];
+				array[i] = array[j];
+				array[j] = temp;
+				print_array(array, size);
+			}
+		}
+	}
+
+	if (array[right] != array[i + 1])
+	{
+		temp = array[i + 1];
+		array[i + 1] = array[right];
+		array[right] = temp;
+		print_array(array, size);
+	}
+
+	return (i + 1);
+}
+
+/**
+ * print_array - prints an array of integers
+ * @array: array to print
+ * @size: size of the array
+ */
+void print_array(const int *array, size_t size)
+{
+	size_t i;
+
+	for (i = 0; i < size; i++)
+	{
+		printf("%d", array[i]);
+		if (i < size - 1)
+			printf(", ");
+	}
+
+	printf("\n");
 }
